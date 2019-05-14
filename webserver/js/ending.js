@@ -10,6 +10,7 @@ var Ending = {
     preload : function() {
     	game.load.image('Wall_paper' , 'img/space.jpg');
         game.load.image('restartButton', 'img/restartbutton.png');
+        game.load.image('reset_ranking', 'img/reset_ranking.png');
         game.load.image('menuButton', 'img/menubutton.png');
         Ending.load.audio('ending_sound', 'audio/ending_sound.mp3')
     },
@@ -27,7 +28,7 @@ var Ending = {
         totalScore = game.add.text(game.world.centerX, 237, score, { font: '124px Arial', fill: '#00f' });
         youDied.anchor.setTo(0.5);
         totalScore.anchor.setTo(0.5);
-        ranking_init = game.add.button(game.world.centerX-110,520,'heart', this.ranking_clear, this);
+        ranking_init = game.add.button(game.world.centerX-20,520,'reset_ranking', this.ranking_clear, this);
         ranking_init.inputEnabled = true;
         easyRestart = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         this.ShowRankingBox();
@@ -53,6 +54,7 @@ var Ending = {
         menuButton.inputEnabled=false;
         restartButton.inputEnabled=false;
 
+        check = 0;
         i = 1;
         fetch('http://tallbin98.dothome.co.kr/ranking_write.php?Name=player&Score=' + score)
             .then(send => send.json())
@@ -60,8 +62,9 @@ var Ending = {
                 ranking=send;
                 ranking.forEach(element => {
                     rank_name += i + '. ' + element.Name + "\n";
-                    if(element.Score == score) {
+                    if(element.Score == score && check == 0) {
                         rank_score += element.Score + " <-\n";
+                        check ++;
                     } else {
                         rank_score += element.Score + "\n";
                     }
@@ -121,6 +124,7 @@ var Ending = {
     },
 
     startGame : function() {
+        music.destroy();
         game.state.start('Game');
         minutes = 0;
         seconds = 0;
